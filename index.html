@@ -33,7 +33,7 @@
                
                 <thead>
                     <tr>
-                        <th scope="col"></th>
+                        <th scope="col"><input type="checkbox" class="form-check-input" id="exampleCheck1"></th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Role</th>
@@ -53,22 +53,29 @@
             </table>
 
             <nav aria-label="Page navigation example">
-                
-                <ul class="pagination justify-content-between">
+                  <ul class="pagination justify-content-between">
 
                     <li class="page-item">
                         <button type="button" class="btn btn-outline-danger">Delete Selected Users</button>
                       </li>
                   
-                      <div class="d-flex mx-auto">
-                  <li class="page-item">
-                    <button class="page-link del-btn" id="prevFunc">Previous</button>
+                <div class="d-flex mx-auto">
+                    <li class="page-item">
+                        <button class="page-link del-btn" id="toFirstPage"><b>⏪First</b></button>
+                      </li>
+
+                    <li class="page-item">
+                    <button class="page-link del-btn" id="prevFunc" >Previous</button>
                   </li>
 
                   <div class="d-flex" id="pagesJumper"></div>
                 
                   <li class="page-item">
                     <button class="page-link" id="nextFunc">Next</button>
+                  </li>
+                
+                  <li class="page-item">
+                    <button class="page-link del-btn" id="toLastPage"><b>Last⏩</b></button>
                   </li>
                 </div>
                 </ul>
