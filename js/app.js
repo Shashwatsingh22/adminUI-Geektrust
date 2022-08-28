@@ -43,11 +43,8 @@ const putLimitOnBtn=()=>{
 	{
 		//Disable it
 		toFirstPageBtn.disabled=true;
-		//Changing the color to Grey
-		toFirstPageBtn.classList.add("btn-secondary");
-
 		backBtn.disabled=true;
-		backBtn.classList.add("btn-secondary");
+		// backBtn.classList.add("btn-secondary");
 	}
 	else if(currentPage>1)
 	{
@@ -85,25 +82,25 @@ const pageJumper=()=>{
 	else dataBase=userData;
 
 	let pagesBtnNumCol="";
-	let startPoint=currentPage>=5 ? currentPage : 1;
+	let startPoint=currentPage>6 ? currentPage : 1;
 	
 	let btnSize=Math.floor(dataBase.length/pageSize);
 	let endPoint = dataBase.length > btnSize*pageSize ? btnSize+1 : btnSize;
 
-	if(currentPage>=5) startPoint=currentPage;
+	if(currentPage>5) startPoint=currentPage;
 
 	for(let pages=startPoint;pages<=endPoint;pages++)
 	{
-		if(pagesBtnNumSize<4)
+		if(pagesBtnNumSize<=4)
 		{
 		if(currentPage==pages)
 			pagesBtnNumCol+=`<li class="page-item active">
-			<button class="page-link"  onclick=jumpTo(${(pages)})> ${pages} </button>
+			<button class="btn btn-light page-link"  onclick=jumpTo(${(pages)})> ${pages} </button>
 		</li>`
 		
 		else 
 			pagesBtnNumCol+=`<li class="page-item">
-			<button class="page-link"  onclick=jumpTo(${(pages)})> ${pages} </button>
+			<button class="btn btn-light page-link"  onclick=jumpTo(${(pages)})> ${pages} </button>
 		</li>`
 		
 		pagesBtnNumSize++;
@@ -175,8 +172,6 @@ async function viewTable()
 	if(headSelector.checked) headSelector.checked=false;
 }
 viewTable()
-
- 
 
  // Do Editing Function Define
  let isClicked=1;
@@ -296,13 +291,21 @@ document.querySelector("#toLastPage").addEventListener('click', toLastPage);
 let toDeleteId=[]
 let clickOnMainCheckBox=1;
 let isDelete=0;
+
 //For Selecting All
 const selectAll =()=>{
     clickOnMainCheckBox++;
+	const rows=document.querySelectorAll(".trs");
+	
 	if(clickOnMainCheckBox%2==0)
 	{
 		isDelete=1;
 		const allInputs=document.querySelectorAll(".inputs");
+		rows.forEach(
+			row=>{
+			   row.style.backgroundColor="lightgray"
+			}
+		)
 		allInputs.forEach((input)=>{
 			toDeleteId.push(+input.getAttribute("key"));
 			input.checked=true;
@@ -311,6 +314,11 @@ const selectAll =()=>{
 	else{
 		clickOnMainCheckBox=1;
 		isDelete=0;
+		rows.forEach(
+			row=>{
+			   row.style.backgroundColor="white"
+			}
+		)
 		const allInputs=document.querySelectorAll(".inputs");
 		allInputs.forEach((input)=>{
 			toDeleteId.splice(+input.getAttribute("key"),1);
@@ -343,14 +351,15 @@ const deleteSlectedUser=()=>{
 const singleInputSelected=(event,id)=>{
 	if(event.target.checked){
 		// Add
+		event.path[2].style.backgroundColor="lightgray"
 		toDeleteId.push(id)
 	}
 	else{
 		// 
+		event.path[2].style.backgroundColor="white"
 		let targetIndex=toDeleteId.indexOf(id)
 		toDeleteId.splice(targetIndex,1)
-		}		
-		//console.log(toDeleteId)
+		}
 }
 
 const searchItem=(e)=>{
