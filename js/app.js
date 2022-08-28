@@ -25,51 +25,51 @@ const getData = async() => {
 	}
 }
 
-//Function prepare our complete page like -- table content (row) + pagination implement and 
-//also we have implement the page jumper concept here
-
-let pageSize = 10;
-let currentPage = 1;
-
-async function viewTable()
-{
-	//get the data
-	await getData();
-	let rows = "";
+//For Changing the Properties of Button according to the Page Number
+const putLimitOnBtn=()=>{
+	//For Changing the Properties of Buttons
+	let toFirstPageBtn=document.querySelector("#toFirstPage")
+	let toLastPageBtn=document.querySelector("#toLastPage")
+	let backBtn = document.querySelector("#prevFunc")
+	let nextBtn = document.querySelector("#nextFunc")
 
 	if(currentPage==1) 
 	{
-		document.querySelector("#toFirstPage").setAttribute("disabled",true);
-		document.querySelector("#prevFunc").setAttribute("disabled",true);
-	}
-	console.log("Inside",currentPage)
+		//Disable it
+		toFirstPageBtn.disabled=true;
+		//Changing the color to Grey
+		toFirstPageBtn.classList.add("btn-secondary");
 
-	if(currentPage>1)
+		backBtn.disabled=true;
+		backBtn.classList.add("btn-secondary");
+	}
+	else if(currentPage>1)
 	{
-		console.log("Inside >1",currentPage)
-		document.querySelector("#toFirstPage").setAttribute("disabled",false);
-		document.querySelector("#prevFunc").setAttribute("disabled",false);
+		toFirstPageBtn.disabled=false;
+		toFirstPageBtn.classList.remove("btn-secondary");
+		backBtn.disabled=false;
+		backBtn.classList.remove("btn-secondary");
 	}
 
-	//Now we will traverse to the array but we will follow the limitation also
-	let begin=(currentPage-1)*pageSize;
-	let end=currentPage*pageSize>userData.length ? userData.length : currentPage*pageSize;
-	
-	for(let user=begin;user<end;user++)
+	if(currentPage==totalPage())
 	{
-		rows+="<tr>"
-		rows+=`<td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>`
-		rows+=`<td> ${(userData[user].name)} </td>`
-		rows+=`<td> ${(userData[user].email)} </td>`
-		rows+=`<td> ${(userData[user].role)} </td>`
-		rows+=`<td>
-		<button class="edit" title="Edit" data-toggle="tooltip"> ✏ </button>
-		<button class="delete" id="delete" title="Delete" data-toggle="tooltip"> 🗑️ </button></td>`
-		"</tr>"
+		toLastPageBtn.disabled=true;
+		toLastPageBtn.classList.add("btn-secondary");
+		nextBtn.disabled=true;
+		nextBtn.classList.add("btn-secondary");
 	}
 
-	document.getElementById("data").innerHTML=rows;
-    
+	if(currentPage<totalPage())
+	{
+		toLastPageBtn.disabled=false;
+		toLastPageBtn.classList.remove("btn-secondary");
+		nextBtn.disabled=false;
+		nextBtn.classList.remove("btn-secondary");
+	}
+}
+
+//Page Jumper
+const pageJumper=()=>{
 	//Now here I have written logic for showing boxes of pageJumper
 	let pagesBtnNumSize=0; //Limitation for showing number of boxs (like once only 4 boxes allowed)
 
@@ -90,12 +90,12 @@ async function viewTable()
 		{
 		if(currentPage==pages)
 			pagesBtnNumCol+=`<li class="page-item active">
-			<button class="page-link" >${pages}</button>
+			<button class="page-link"  onclick=jumpTo(${(pages)})>${pages}</button>
 		</li>`
 		
 		else 
 			pagesBtnNumCol+=`<li class="page-item">
-			<button class="page-link" >${pages}</button>
+			<button class="page-link"  onclick=jumpTo(${(pages)})>${pages}</button>
 		</li>`
 		
 		pagesBtnNumSize++;
@@ -109,27 +109,84 @@ async function viewTable()
 
 	document.getElementById("pagesJumper").innerHTML=pagesBtnNumCol;
 }
+
+//Function prepare our complete page like -- table content (row) + pagination implement and 
+//also we have implement the page jumper concept here
+
+let pageSize = 10;
+let currentPage = 1;
+
+let isFetched = false;
+
+async function viewTable()
+{
+	//get the data
+	if(!isFetched)
+	{
+		isFetched=true;
+		await getData()
+	}
+
+	//Set the Buttons Limitations
+	putLimitOnBtn();
+	
+    let rows = "";
+	if(userData.length)
+	{
+	//Now we will traverse to the array but we will follow the limitation also
+	let begin=(currentPage-1)*pageSize;
+	let end=currentPage*pageSize>userData.length ? userData.length : currentPage*pageSize;
+	
+	for(let user=begin;user<end;user++)
+	{
+		rows+="<tr>"
+		rows+=`<td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>`
+		rows+=`<td> ${(userData[user].name)} </td>`
+		rows+=`<td> ${(userData[user].email)} </td>`
+		rows+=`<td> ${(userData[user].role)} </td>`
+		rows+=`<td>
+		<button class="edit" title="Edit" data-toggle="tooltip"> ✏ </button>
+		<button class="delete" id="delete" title="Delete" data-toggle="tooltip" onclick=deleteUserById(${(userData[user].id)})> 🗑️ </button></td>`
+		"</tr>"
+	}
+    }
+
+	else rows="<h3 class='d-flex justify-content-center'> No Record Found 😩</h3>";
+	document.getElementById("data").innerHTML=rows;
+    
+
+pageJumper()
+	
+}
 viewTable()
 
 //Through this function we can move prevpage
 const prevPage=()=>{
 	if(currentPage>1)
 		currentPage--;
-	
-	console.log("Prec => ",currentPage);
 	viewTable();
 }
+//For Moving to previous Page
+document.querySelector("#prevFunc").addEventListener('click', prevPage);
 
 const nextPage=()=>{
 	if(currentPage*pageSize < userData.length) currentPage++;
-	console.log("Next => ",currentPage)
 	viewTable();
 }
+//For moving to next Page
+document.querySelector("#nextFunc").addEventListener('click', nextPage);
+
 
 const deleteUserById=(id)=>{
-   userData.forEach(user=>{
-        if(user.id==id) delete user;
-   })
+	let user=0
+	
+	for(user=0;user<userData.length;user++)
+	{
+		if(userData[user].id==id) break;
+	}
+   console.log(user);
+   userData.splice(user,1);
+   console.log(userData)
    viewTable();
 }
 
@@ -142,26 +199,31 @@ const editUserById=(id,name,email,role)=>{
 			user.role=role;
 		}
 	})
-	viewTable(currentPage);
-}
-
-const toFirstPage=()=>{
-	console.log("active");
 	viewTable();
 }
-//For Moving to previous Page
-document.querySelector("#prevFunc").addEventListener('click', prevPage);
-//For moving to next Page
-document.querySelector("#nextFunc").addEventListener('click', nextPage);
-
-//Moving to FirstPage
-document.querySelector("#toFirstPage").addEventListener('click',toFirstPage);
-
-const toLastPage=()=>{
-	
-}
-
 
 //For Deleteing the Page
 // document.querySelector("#delete").addEventListener('delete', deleteUserById,false);
+const toFirstPage=()=>{
+	currentPage=1;
+	viewTable();
+}
+//Moving to FirstPage
+document.querySelector("#toFirstPage").addEventListener('click',toFirstPage);
 
+const jumpTo=(page)=>{
+	currentPage=page;
+	viewTable();
+}
+
+const totalPage=()=>{
+	let totalPage = Math.floor(userData.length/pageSize);
+	return userData.length> totalPage*pageSize? totalPage+1 : totalPage;
+}
+
+const toLastPage=()=>{
+    currentPage=totalPage();
+    viewTable();
+}
+//Moving to Last Page
+document.querySelector("#toLastPage").addEventListener('click', toLastPage);
