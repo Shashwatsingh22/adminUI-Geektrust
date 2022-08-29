@@ -73,9 +73,9 @@ const putLimitOnBtn=()=>{
 //Page Jumper
 const pageJumper=()=>{
 	//Now here I have written logic for showing boxes of pageJumper
-	let pagesBtnNumSize=0; //Limitation for showing number of boxs (like once only 4 boxes allowed)
+	let pagesBtnNumSize=0; //Limitation for showing number of boxs (like once only 5 boxes allowed)
 
-	//Forexample if we have data arround 46 then 5 pages required but at one page I am allowing only four
+	//Forexample if we have data arround 46 then 5 pages required but at one page I am allowing only five
 	//Boxes
 	let dataBase=[];
 	if(byFilter) dataBase=filteredData;
